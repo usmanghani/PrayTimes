@@ -1,0 +1,85 @@
+<html>
+<head>
+<title> Yearly Prayer Timetable </title>
+<style>
+	body, td {font-family: tahoma; font-size: 11px; color: #404040; text-align: center; }
+	pre {font-family: courier, serif, size: 10pt; margin: 0px 8px;}
+	.form {padding:10px; background-color: #F8F7F4; border: 1px dashed #EAE9CD;}
+</style>
+</head>
+
+<body>
+
+<h2> Yearly Prayer Timetable </h2>
+<div class="form">
+	Latitude: <input type="text" value="43" id="latitude" size="4">
+	Longitude: <input type="text" value="-80" id="longitude" size="4">
+	Time Zone: <input type="text" value="-5" id="timezone" size="2"> 
+	Year: <input type="text" value="2007" id="year" size="4"> <br>
+	Method: 
+	<select id="method" name="method" size="1">
+		<option value="0">Shia Ithna-Ashari</option>
+		<option value="1">University of Islamic Sciences, Karachi</option>
+		<option value="2">Islamic Society of North America (ISNA)</option>
+		<option selected="selected" value="3">Muslim World League (MWL)</option>
+		<option value="4">Umm al-Qura, Makkah</option>
+		<option value="5">Egyptian General Authority of Survey</option>
+    </select>	
+	<input type="submit" value="Make Timetable" onclick="run();">
+</div>
+
+<pre>
+
+ Date   Fajr   Sunrise  Dhuhr    Asr   Sunset  Maghrib  Isha 
+-------------------------------------------------------------
+</pre>
+
+<div id="timetable">
+</div>
+
+<script type="text/javascript" src="../PrayTime.js"></script>
+
+<script type="text/javascript">
+
+	function run()
+	{
+		var lat = document.getElementById('latitude').value;
+		var lng = document.getElementById('longitude').value;
+		var timeZone = document.getElementById('timezone').value;
+		var year = document.getElementById('year').value;
+		var method = document.getElementById('method').value;
+		var table = document.getElementById('timetable');
+		var str = makeTable(method, year, lat, lng, timeZone);
+		table.innerHTML = '<pre>'+ str+ '</pre>';
+	}
+
+
+	function makeTable(method, year, lat, lng, timeZone)
+	{
+		var table = ''; 
+		var monthNames = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May',
+				'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+		var date = new Date(year, 0, 1);
+		var endDate = new Date(1*year+ 1, 0, 1);
+		prayTime.setCalcMethod(method);
+
+		while (date < endDate)
+		{
+			var times = prayTime.getPrayerTimes(date, lat, lng, timeZone);
+			var day = date.getDate();
+			day = (day <10) ? '0'+ day : day;
+			table += monthNames[date.getMonth()]+ ' '+ day+ "\t"+ times.join("\t")+ "\n";
+			date.setDate(date.getDate()+ 1);  // next day
+		}
+		return table;
+	}
+
+	run();
+
+</script>
+
+</body>
+</html>
+
+
+
